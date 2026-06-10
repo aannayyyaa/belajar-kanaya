@@ -6,8 +6,12 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 
 use App\Models\ProductModel;
+use Dompdf\Dompdf;
+
 class ProdukController extends BaseController
 {
+    protected $helpers = ['form'];
+
     protected $productModel;
 
     function __construct()
@@ -77,9 +81,47 @@ class ProdukController extends BaseController
     public function delete($id)
     {
         $dataProduk = $this->productModel->find($id);
+
+        // Hapus foto dari folder jika ada sebelum data dihapus dari database (opsional tapi disarankan)
+        if ($dataProduk['foto'] != '' and file_exists("img/" . $dataProduk['foto'] . "")) {
+            unlink("img/" . $dataProduk['foto']);
+        }
+
         $this->productModel->delete($id);
 
         return redirect('produk')->with('success', 'Data Berhasil Dihapus');
     }
 
+    public function download()
+    {
+        // Ambil data produk dari database
+        $products = $this->productModel->findAll();
+
+        // Render view menjadi HTML 
+        // PERUBAHAN DI SINI: 'produk/download_pdf' diubah menjadi 'download_pdf'
+        // Render view menjadi HTML 
+        $html = view('produk/download_pdf', [
+            'products' => $products
+        ]);
+
+        // Nama file PDF
+        $filename = date('Y-m-d-H-i-s') . '-produk.pdf';
+
+        // Inisialisasi Dompdf
+        $dompdf = new Dompdf();
+
+        // Load HTML ke Dompdf
+        $dompdf->loadHtml($html);
+
+        // Setting ukuran kertas dan orientasi
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Generate PDF
+        $dompdf->render();
+
+        // Download / tampilkan PDF
+        $dompdf->stream($filename, [
+            'Attachment' => true
+        ]);
+    }
 }
