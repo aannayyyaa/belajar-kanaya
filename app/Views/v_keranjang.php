@@ -87,6 +87,9 @@
                 onclick="return confirm('Yakin ingin mengosongkan semua isi keranjang?')">
                 Kosongkan Keranjang
             </a>
+            <?php if (!empty($items)): ?>
+                <a class="btn btn-success" href="<?php echo base_url() ?>checkout">Selesai Belanja</a>
+            <?php endif; ?>
         </div>
 
         <?= form_close() ?>
