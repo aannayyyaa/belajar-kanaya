@@ -1,4 +1,4 @@
 ### Cari destination Semarang
-GET https://rajaongkir.komerce.id/api/v1/destination/domestic-destination?search=semarang&limit=50
+GET https://rajaongkir.komerce.id/api/v1/destination/domestic-destination?search=semarang&limit=100
 Accept: application/json
-key: N-ayy123
+key:Cb2JcPdbcb8fcdd9c9201c1e5w6G4Fhw

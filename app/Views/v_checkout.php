@@ -1,11 +1,13 @@
 <?= $this->extend('layout') ?>
 <?= $this->section('content') ?>
+
 <div class="row">
     <div class="col-lg-6">
-        <?= form_open('buy', 'class="row g-3"') ?>
+
+        <?= form_open('buy', ['class' => 'row g-3']) ?>
 
         <?= form_hidden('username', session()->get('username')) ?>
-        <?= form_hidden('total_harga', '', ['id' => 'total_harga']) ?>
+        <input type="hidden" name="total_harga" id="total_harga">
 
         <div class="col-12">
             <?= form_label('Nama', 'nama', ['class' => 'form-label']) ?>
@@ -17,6 +19,7 @@
                 'readonly' => true
             ]) ?>
         </div>
+
         <div class="col-12">
             <?= form_label('Alamat', 'alamat', ['class' => 'form-label']) ?>
             <?= form_input([
@@ -25,14 +28,19 @@
                 'class' => 'form-control'
             ]) ?>
         </div>
+
         <div class="col-12">
             <?= form_label('Kelurahan', 'kelurahan', ['class' => 'form-label']) ?>
             <?= form_dropdown('kelurahan', [], '', ['id' => 'kelurahan', 'class' => 'form-control']) ?>
+            <strong>Select Kelurahan</strong>
         </div>
+
         <div class="col-12">
             <?= form_label('Layanan', 'layanan', ['class' => 'form-label']) ?>
             <?= form_dropdown('layanan', [], '', ['id' => 'layanan', 'class' => 'form-control']) ?>
+            <strong>Select Layanan</strong>
         </div>
+
         <div class="col-12">
             <?= form_label('Ongkir', 'ongkir', ['class' => 'form-label']) ?>
             <?= form_input([
@@ -42,15 +50,13 @@
                 'readonly' => true
             ]) ?>
         </div>
+
         <div class="col-12">
-            <?= form_submit(
-                'submit',
-                'Buat Pesanan',
-                ['class' => 'btn btn-primary']
-            ) ?>
+            <?= form_submit('submit', 'Buat Pesanan', ['class' => 'btn btn-primary']) ?>
         </div>
 
         <?= form_close() ?>
+
     </div>
     <div class="col-lg-6">
         <table class="table">
@@ -103,10 +109,8 @@
         </table>
     </div>
 </div>
-<?php
-d($items);
-d($total);
-?>
+
+
 
 <?= $this->endSection() ?>
 <?= $this->section('script') ?>

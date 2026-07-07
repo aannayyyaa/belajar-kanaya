@@ -2,6 +2,6 @@
 POST https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost
 Content-Type: application/x-www-form-urlencoded
 Accept: application/json
-key: N-ayy123
+key: Cb2JcPdbcb8fcdd9c9201c1e5w6G4Fhw
 
 origin=64999&destination=64942&weight=1000&courier=jne

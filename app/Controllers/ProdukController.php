@@ -4,19 +4,21 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
-
 use App\Models\ProductModel;
 use Dompdf\Dompdf;
 
 class ProdukController extends BaseController
 {
+    // Deklarasi properti cukup satu kali saja di sini
+    protected $productModel;
+    private $token;
     protected $helpers = ['form'];
 
-    protected $productModel;
-
-    function __construct()
+    // Constructor digabung menjadi satu
+    public function __construct()
     {
         $this->productModel = new ProductModel();
+        $this->token = env('MY_API_KEY');
     }
 
     public function index()
@@ -98,8 +100,6 @@ class ProdukController extends BaseController
         $products = $this->productModel->findAll();
 
         // Render view menjadi HTML 
-        // PERUBAHAN DI SINI: 'produk/download_pdf' diubah menjadi 'download_pdf'
-        // Render view menjadi HTML 
         $html = view('produk/download_pdf', [
             'products' => $products
         ]);
@@ -123,5 +123,30 @@ class ProdukController extends BaseController
         $dompdf->stream($filename, [
             'Attachment' => true
         ]);
+    }
+
+    private function authenticate()
+    {
+        $header = $this->request->getHeaderLine('Authorization');
+
+        if (empty($header)) {
+            return false;
+        }
+
+        if (!preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
+            return false;
+        }
+
+        return $matches[1] === $this->token;
+    }
+
+    private function unauthorized()
+    {
+        return $this->response
+            ->setStatusCode(401)
+            ->setJSON([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ]);
     }
 }
