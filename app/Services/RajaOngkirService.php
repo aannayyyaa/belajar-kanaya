@@ -13,6 +13,7 @@ class RajaOngkirService
         $this->client = Services::curlrequest([
             'timeout' => 10,
             'http_errors' => false,
+            'verify' => false,
         ]);
 
         $this->apiKey = env('RAJAONGKIR_API_KEY');

@@ -1,11 +1,13 @@
 <?= $this->extend('layout') ?>
 <?= $this->section('content') ?>
+
 <div class="row">
     <div class="col-lg-6">
         <?= form_open('buy', 'class="row g-3"') ?>
 
         <?= form_hidden('username', session()->get('username')) ?>
-        <?= form_hidden('total_harga', '', ['id' => 'total_harga']) ?>
+
+        <?= form_hidden('total_harga', '') ?>
 
         <div class="col-12">
             <?= form_label('Nama', 'nama', ['class' => 'form-label']) ?>
@@ -103,17 +105,13 @@
         </table>
     </div>
 </div>
-<?php
-d($items);
-d($total);
-?>
-
 <?= $this->endSection() ?>
 <?= $this->section('script') ?>
 <script>
     $(document).ready(function () {
         let ongkir = 0;
         let subtotal = <?= $total ?>;
+
         hitungTotal();
 
         function hitungTotal() {
@@ -167,14 +165,12 @@ d($total);
                     });
                 }
             });
+
+            $("#layanan").on('change', function () {
+                ongkir = parseInt($(this).val());
+                hitungTotal();
+            });
         });
-
-        $("#layanan").on('change', function () {
-            ongkir = parseInt($(this).val());
-            hitungTotal();
-        });
-
-
     });
 </script>
 <?= $this->endSection() ?>
