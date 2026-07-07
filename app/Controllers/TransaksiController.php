@@ -25,7 +25,8 @@ class TransaksiController extends BaseController
     public function index()
     {
         $data = [
-            'items' => $this->cart->contents()
+            'items' => $this->cart->contents(),
+            'total' => $this->cart->total()
         ];
 
         return view('v_keranjang', $data);
@@ -45,11 +46,31 @@ class TransaksiController extends BaseController
 
         session()->setFlashdata(
             'success',
-            'Produk berhasil ditambahkan ke keranjang. 
-        <a href="' . base_url('keranjang') . '">Lihat</a>'
+            'Produk berhasil ditambahkan ke keranjang.
+            <a href="' . base_url('keranjang') . '">Lihat</a>'
         );
 
         return redirect()->to(base_url('/'));
+    }
+
+    public function cart_edit()
+    {
+        $i = 1;
+        foreach ($this->cart->contents() as $item) {
+            $qty = $this->request->getPost('qty' . $i++);
+
+            $this->cart->update([
+                'rowid' => $item['rowid'],
+                'qty' => $qty
+            ]);
+        }
+
+        session()->setFlashdata(
+            'success',
+            'Keranjang berhasil diperbarui'
+        );
+
+        return redirect()->to(base_url('keranjang'));
     }
 
     public function cart_delete($rowid)
@@ -64,30 +85,6 @@ class TransaksiController extends BaseController
         return redirect()->to(base_url('keranjang'));
     }
 
-    // --- TAMBAHAN BARU: Fungsi untuk memperbarui jumlah kuantitas (qty) barang ---
-    public function cart_update()
-    {
-        $qtyData = $this->request->getPost('qty');
-
-        // Looping untuk mengupdate qty berdasarkan masing-masing rowid
-        if ($qtyData) {
-            foreach ($qtyData as $rowid => $qty) {
-                $this->cart->update([
-                    'rowid' => $rowid,
-                    'qty' => $qty
-                ]);
-            }
-
-            session()->setFlashdata(
-                'success',
-                'Keranjang berhasil diperbarui'
-            );
-        }
-
-        return redirect()->to(base_url('keranjang'));
-    }
-
-    // --- TAMBAHAN BARU: Fungsi untuk menghapus semua isi keranjang ---
     public function cart_clear()
     {
         $this->cart->destroy();
@@ -104,20 +101,15 @@ class TransaksiController extends BaseController
     {
         $data = [
             'items' => $this->cart->contents(),
-            'total' => $this->cart->total(),
+            'total' => $this->cart->total()
         ];
 
         return view('v_checkout', $data);
     }
+
     public function destinations()
     {
         $search = $this->request->getGet('q');
-
-        if (empty($search)) {
-            return $this->response->setJSON([
-                'results' => []
-            ]);
-        }
 
         $service = new RajaOngkirService();
         $response = $service->getDestination($search);
@@ -157,11 +149,84 @@ class TransaksiController extends BaseController
                 'cost' => $item['cost'],
                 'etd' => $item['etd']
             ];
-            
         }
 
         return $this->response->setJSON($results);
     }
 
+    public function buy()
+    {
+        $cartItems = $this->cart->contents();
 
+        if (empty($cartItems)) {
+            return redirect()->back();
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        $subtotal = 0;
+        foreach ($cartItems as $item) {
+            $subtotal += $item['qty'] * $item['price'];
+        }
+
+        $ongkir = (int) $this->request->getPost('ongkir');
+
+        $transaction = [
+            'username' => $this->request->getPost('username'),
+            'alamat' => $this->request->getPost('alamat'),
+            'ongkir' => $ongkir,
+            'total_harga' => $subtotal + $ongkir,
+            'status' => 0,
+        ];
+
+        // insert transaction
+        if (!$this->transactionModel->insert($transaction)) {
+            $db->transRollback();
+
+            return redirect()->back()->with('error', 'Gagal membuat transaksi');
+        }
+
+        $transactionId = $this->transactionModel->getInsertID();
+
+        // insert transaction detail
+        foreach ($cartItems as $item) {
+            $this->transactionDetailModel->insert([
+                'transaction_id' => $transactionId,
+                'product_id' => $item['id'],
+                'jumlah' => $item['qty'],
+                'diskon' => 0,
+                'subtotal_harga' => $item['qty'] * $item['price']
+            ]);
+        }
+
+        $db->transComplete();
+
+        if (!$db->transStatus()) {
+            return redirect()->back()->with('error', 'Gagal membuat transaksi');
+        }
+
+        // hapus session keranjang belanja
+        $this->cart->destroy();
+
+        return redirect()->to(base_url());
+    }
+
+    public function history()
+    {
+        $username = session()->get('username');
+
+        $transactions = $this->transactionModel->where('username', $username)->findAll();
+        $transactionIds = array_column($transactions, 'id');
+
+        $products = $this->transactionDetailModel->getProductsByTransactionIds($transactionIds);
+
+        $data = [
+            'username' => $username,
+            'transactions' => $transactions,
+            'products' => $products
+        ];
+
+        return view('v_history', $data);
+    }
 }
