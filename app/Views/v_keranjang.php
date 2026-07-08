@@ -13,7 +13,7 @@
             </div>
         <?php endif; ?>
 
-        <?= form_open('keranjang/update') ?>
+        <?= form_open('keranjang/edit') ?>
 
         <div class="table-responsive">
             <table class="table datatable table-hover align-middle">

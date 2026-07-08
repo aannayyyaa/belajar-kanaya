@@ -5,18 +5,13 @@ namespace App\Controllers\Api;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 
-use App\Models\ProductModel;
-
 class ProdukController extends ResourceController
 {
-    protected $model;
-    private $token;
-
-    function __construct()
-    {
-        $this->model = new ProductModel();
-        $this->token = env('MY_API_KEY');
-    }
+    /**
+     * Return an array of resource objects, themselves in array format.
+     *
+     * @return ResponseInterface
+     */
     public function index()
     {
         //
@@ -31,17 +26,7 @@ class ProdukController extends ResourceController
      */
     public function show($id = null)
     {
-        if (!$this->authenticate()) {
-            return $this->unauthorized();
-        }
-
-        $product = $this->model->find($id);
-
-        if (!$product) {
-            return $this->failNotFound('Produk tidak ditemukan');
-        }
-
-        return $this->respond($product);
+        //
     }
 
     /**
@@ -83,7 +68,6 @@ class ProdukController extends ResourceController
      *
      * @return ResponseInterface
      */
-
     public function update($id = null)
     {
         //

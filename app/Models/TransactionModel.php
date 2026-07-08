@@ -10,12 +10,13 @@ class TransactionModel extends Model
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
     protected $protectFields = true;
     protected $allowedFields = [
-        'user_id',
-        'total_harga',
+        'username',
+        'alamat',
         'ongkir',
+        'total_harga',
         'status',
         'deleted_at',
         'ppn',
@@ -25,14 +26,14 @@ class TransactionModel extends Model
         'grand_total'
     ];
 
-    protected bool $allowEmptyInserts = false;
+    protected bool $allowEmptyInserts = true;
     protected bool $updateOnlyChanged = true;
 
     protected array $casts = [];
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat = 'datetime';
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
@@ -41,7 +42,7 @@ class TransactionModel extends Model
     // Validation
     protected $validationRules = [];
     protected $validationMessages = [];
-    protected $skipValidation = false;
+    protected $skipValidation = true;
     protected $cleanValidationRules = true;
 
     // Callbacks

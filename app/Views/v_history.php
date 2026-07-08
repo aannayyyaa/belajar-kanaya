@@ -1,8 +1,6 @@
 <?= $this->extend('layout') ?>
 <?= $this->section('content') ?>
-History Transaksi Pembelian <strong>
-    <?= $username ?>
-</strong>
+History Transaksi Pembelian <strong><?= $username ?></strong>
 <hr>
 <div class="table-responsive">
     <!-- Table with stripped rows -->
@@ -24,21 +22,11 @@ History Transaksi Pembelian <strong>
                 foreach ($transactions as $index => $item):
                     ?>
                     <tr>
-                        <th scope="row">
-                            <?= $index + 1 ?>
-                        </th>
-                        <td>
-                            <?= $item['id'] ?>
-                        </td>
-                        <td>
-                            <?= $item['created_at'] ?>
-                        </td>
-                        <td>
-                            <?= number_to_currency($item['total_harga'], 'IDR') ?>
-                        </td>
-                        <td>
-                            <?= $item['alamat'] ?>
-                        </td>
+                        <th scope="row"><?= $index + 1 ?></th>
+                        <td><?= $item['id'] ?></td>
+                        <td><?= $item['created_at'] ?></td>
+                        <td><?= number_to_currency($item['total_harga'], 'IDR') ?></td>
+                        <td><?= $item['alamat'] ?></td>
                         <td>
                             <?= ($item['status'] == "1")
                                 ? '<span class="badge bg-success">Sudah Selesai</span>'
@@ -67,9 +55,7 @@ History Transaksi Pembelian <strong>
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Detail Transaksi #
-                            <?= $item['id'] ?>
-                        </h5>
+                        <h5 class="modal-title">Detail Transaksi #<?= $item['id'] ?></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -87,9 +73,7 @@ History Transaksi Pembelian <strong>
                                     </div>
                                 <?php endif; ?>
 
-                                <strong>
-                                    <?= $item2['nama'] ?>
-                                </strong>
+                                <strong><?= $item2['nama'] ?></strong>
                                 <?= number_to_currency($item2['harga'], 'IDR') ?>
                                 <br>
                                 <?= "(" . $item2['jumlah'] . " pcs)" ?><br>
@@ -97,8 +81,7 @@ History Transaksi Pembelian <strong>
                                 <hr>
                             <?php endforeach; ?>
                         <?php endif; ?>
-                        Ongkir
-                        <?= number_to_currency($item['ongkir'], 'IDR') ?>
+                        Ongkir <?= number_to_currency($item['ongkir'], 'IDR') ?>
                     </div>
                 </div>
             </div>

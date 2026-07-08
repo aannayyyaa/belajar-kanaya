@@ -55,14 +55,19 @@ class TransaksiController extends BaseController
 
     public function cart_edit()
     {
-        $i = 1;
-        foreach ($this->cart->contents() as $item) {
-            $qty = $this->request->getPost('qty' . $i++);
+        $qtyArray = $this->request->getPost('qty');
 
-            $this->cart->update([
-                'rowid' => $item['rowid'],
-                'qty' => $qty
-            ]);
+        // 2. Looping isi keranjang yang ada saat ini
+        foreach ($this->cart->contents() as $item) {
+            $rowid = $item['rowid'];
+
+            // 3. Cek apakah ada data qty baru untuk rowid ini di form
+            if (isset($qtyArray[$rowid])) {
+                $this->cart->update([
+                    'rowid' => $rowid,
+                    'qty' => $qtyArray[$rowid]
+                ]);
+            }
         }
 
         session()->setFlashdata(
